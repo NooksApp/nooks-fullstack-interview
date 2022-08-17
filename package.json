@@ -1,0 +1,23 @@
+{
+  "name": "nooks-fullstack-interview",
+  "version": "1.0.0",
+  "description": "Build a graph crawler",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NooksApp/nooks-fullstack-interview.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NooksApp/nooks-fullstack-interview/issues"
+  },
+  "homepage": "https://github.com/NooksApp/nooks-fullstack-interview#readme",
+  "dependencies": {
+    "axios": "^0.27.2"
+  }
+}
