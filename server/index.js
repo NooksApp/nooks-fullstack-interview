@@ -6,7 +6,7 @@ const app = express();
 const port = 3001;
 
 const graph = JSON.parse(await readFile("data/graph.json"));
-const DELAY = 0;
+const DELAY = 2000;
 const CHANCE_TO_FAIL = 0.0;
 
 const RATE_LIMIT = 100000;
@@ -34,7 +34,7 @@ app.get("/get_neighbors", async (req, res) => {
   currentSynchronousRequests += 1;
   setTimeout(() => {
     currentSynchronousRequests -= 1;
-  }, 1000);
+  }, RATE_LIMIT_TIMEOUT);
 
   const node = req.query.node;
   if (!graph.nodes.includes(node)) {
