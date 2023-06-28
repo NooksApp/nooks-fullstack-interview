@@ -3,13 +3,13 @@ import { readFile } from "node:fs/promises";
 import ngrok from "ngrok";
 
 const app = express();
-const port = 3001;
+const port = 5001;
 
 const graph = JSON.parse(await readFile("data/graph.json"));
-const DELAY = 2000;
+const DELAY = 3000;
 const CHANCE_TO_FAIL = 0.0;
 
-const RATE_LIMIT = 100000;
+const RATE_LIMIT = 3;
 const RATE_LIMIT_TIMEOUT = 1000;
 let currentSynchronousRequests = 0;
 let currentlyRateLimited = false;
@@ -20,13 +20,14 @@ const publicUrl = await ngrok.connect({
   subdomain: "nooks-takehome-server",
 });
 
-app.get("/get_neighbors", async (req, res) => {
-  if (currentSynchronousRequests > RATE_LIMIT) {
+const get_neighbors = async (node, config) => {
+  if (currentSynchronousRequests > config.RATE_LIMIT) {
     currentlyRateLimited = true;
     setTimeout(() => {
       currentlyRateLimited = false;
     }, 10000);
   }
+
   if (currentlyRateLimited) {
     res.sendStatus(429);
     return;
@@ -34,7 +35,7 @@ app.get("/get_neighbors", async (req, res) => {
   currentSynchronousRequests += 1;
   setTimeout(() => {
     currentSynchronousRequests -= 1;
-  }, RATE_LIMIT_TIMEOUT);
+  }, config.RATE_LIMIT_TIMEOUT);
 
   const node = req.query.node;
   if (!graph.nodes.includes(node)) {
@@ -42,9 +43,9 @@ app.get("/get_neighbors", async (req, res) => {
     return;
   }
 
-  await new Promise((r) => setTimeout(r, DELAY));
+  await new Promise((r) => setTimeout(r, config.DELAY));
 
-  if (Math.random() < CHANCE_TO_FAIL) {
+  if (Math.random() < config.CHANCE_TO_FAIL) {
     res.sendStatus(500);
     return;
   }
@@ -58,6 +59,42 @@ app.get("/get_neighbors", async (req, res) => {
       .map((edge) => edge.source),
   ];
   res.send(neighbors);
+};
+
+app.get("api/v1/get_neighbors", async (req, res) => {
+  await get_neighbors(req.query.node, {
+    DELAY: 0,
+    RATE_LIMIT: 100000,
+    RATE_LIMIT_TIMEOUT: 1000,
+    CHANCE_TO_FAIL: 0.0,
+  });
+});
+
+app.get("api/v2/get_neighbors", async (req, res) => {
+  await get_neighbors(req.query.node, {
+    DELAY: 3000,
+    RATE_LIMIT: 100000,
+    RATE_LIMIT_TIMEOUT: 1000,
+    CHANCE_TO_FAIL: 0.0,
+  });
+});
+
+app.get("api/v3/get_neighbors", async (req, res) => {
+  await get_neighbors(req.query.node, {
+    DELAY: 3000,
+    RATE_LIMIT: 5,
+    RATE_LIMIT_TIMEOUT: 1000,
+    CHANCE_TO_FAIL: 0.0,
+  });
+});
+
+app.get("api/v4/get_neighbors", async (req, res) => {
+  await get_neighbors(req.query.node, {
+    DELAY: 3000,
+    RATE_LIMIT: 5,
+    RATE_LIMIT_TIMEOUT: 1000,
+    CHANCE_TO_FAIL: 0.4,
+  });
 });
 
 app.listen(port, () => {
