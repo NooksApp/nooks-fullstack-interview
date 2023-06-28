@@ -2,13 +2,13 @@ import express from "express";
 import { readFile } from "node:fs/promises";
 
 const app = express();
-const port = 5001;
+const port = 3003;
 
 const graph = JSON.parse(await readFile("data/graph.json"));
 let currentSynchronousRequests = 0;
 let currentlyRateLimited = false;
 
-const get_neighbors = async (node, config) => {
+const get_neighbors = async (req, res, config) => {
   if (currentSynchronousRequests > config.RATE_LIMIT) {
     currentlyRateLimited = true;
     setTimeout(() => {
@@ -25,13 +25,13 @@ const get_neighbors = async (node, config) => {
     currentSynchronousRequests -= 1;
   }, config.RATE_LIMIT_TIMEOUT);
 
+  const node = req.query.node;
   if (!graph.nodes.includes(node)) {
     res.sendStatus(404);
     return;
   }
 
   await new Promise((r) => setTimeout(r, config.DELAY));
-
   if (Math.random() < config.CHANCE_TO_FAIL) {
     res.sendStatus(500);
     return;
@@ -45,11 +45,11 @@ const get_neighbors = async (node, config) => {
       .filter((edge) => edge.target === node)
       .map((edge) => edge.source),
   ];
-  res.send(neighbors);
+  res.send(neighbors).status(200);
 };
 
-app.get("api/v1/get_neighbors", async (req, res) => {
-  await get_neighbors(req.query.node, {
+app.get("/api/v1/get_neighbors", async (req, res) => {
+  await get_neighbors(req, res, {
     DELAY: 0,
     RATE_LIMIT: 100000,
     RATE_LIMIT_TIMEOUT: 1000,
@@ -57,8 +57,8 @@ app.get("api/v1/get_neighbors", async (req, res) => {
   });
 });
 
-app.get("api/v2/get_neighbors", async (req, res) => {
-  await get_neighbors(req.query.node, {
+app.get("/api/v2/get_neighbors", async (req, res) => {
+  await get_neighbors(req, res, {
     DELAY: 3000,
     RATE_LIMIT: 100000,
     RATE_LIMIT_TIMEOUT: 1000,
@@ -66,8 +66,8 @@ app.get("api/v2/get_neighbors", async (req, res) => {
   });
 });
 
-app.get("api/v3/get_neighbors", async (req, res) => {
-  await get_neighbors(req.query.node, {
+app.get("/api/v3/get_neighbors", async (req, res) => {
+  await get_neighbors(req, res, {
     DELAY: 3000,
     RATE_LIMIT: 5,
     RATE_LIMIT_TIMEOUT: 1000,
@@ -75,8 +75,8 @@ app.get("api/v3/get_neighbors", async (req, res) => {
   });
 });
 
-app.get("api/v4/get_neighbors", async (req, res) => {
-  await get_neighbors(req.query.node, {
+app.get("/api/v4/get_neighbors", async (req, res) => {
+  await get_neighbors(req, res, {
     DELAY: 3000,
     RATE_LIMIT: 5,
     RATE_LIMIT_TIMEOUT: 1000,
