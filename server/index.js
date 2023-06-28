@@ -2,7 +2,7 @@ import express from "express";
 import { readFile } from "node:fs/promises";
 
 const app = express();
-const port = 3003;
+const port = 5001;
 
 const graph = JSON.parse(await readFile("data/graph.json"));
 let currentSynchronousRequests = 0;
