@@ -1,5 +1,6 @@
 import axios from "axios";
-const SERVER_URL = "https://nooks-takehome-server.ngrok.io";
+const SERVER_URL = "https://nooks-live-takehome.nooks.in/api/v1/";
+// const SERVER_URL = "https://nooks-live-takehome.nooks.in/api/v2/"; // for second part
 
 // This API request queries a simple graph data structure
 // The graph is simple. Edges are undirected & unweighted
