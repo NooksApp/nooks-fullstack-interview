@@ -1,6 +1,5 @@
 import express from "express";
 import { readFile } from "node:fs/promises";
-import ngrok from "ngrok";
 
 const app = express();
 const port = 5001;
@@ -8,12 +7,6 @@ const port = 5001;
 const graph = JSON.parse(await readFile("data/graph.json"));
 let currentSynchronousRequests = 0;
 let currentlyRateLimited = false;
-
-await ngrok.authtoken("27o727cR7Gvf0OVv0ZObf5E2gxU_5wx7JTQFoFKyZuXeSJe1d");
-const publicUrl = await ngrok.connect({
-  addr: port,
-  subdomain: "nooks-takehome-server",
-});
 
 const get_neighbors = async (node, config) => {
   if (currentSynchronousRequests > config.RATE_LIMIT) {
