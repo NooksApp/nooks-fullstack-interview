@@ -85,5 +85,5 @@ app.get("api/v4/get_neighbors", async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on public URL ${publicUrl}`);
+  console.log(`Example app listening on Port ${port}`);
 });
