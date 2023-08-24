@@ -1,7 +1,7 @@
 import requests
 
 SERVER_URL = "https://nooks-live-takehome.nooks.in/api/v1"
-# SERVER_URL = "https://nooks-live-takehome.nooks.in/api/v2" // for second part
+# SERVER_URL = "https://nooks-live-takehome.nooks.in/api/v2" # for second part
 
 """
 This API request queries a simple graph data structure
