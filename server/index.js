@@ -84,6 +84,10 @@ app.get("/api/v4/get_neighbors", async (req, res) => {
   });
 });
 
+app.get("/health", async (req, res) => {
+  res.sendStatus(200);
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on Port ${port}`);
 });
