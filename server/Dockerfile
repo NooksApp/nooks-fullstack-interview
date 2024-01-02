@@ -1,7 +1,4 @@
-FROM node:16.19.1-alpine AS build
-
-RUN apk add --no-cache g++ make py3-pip
-# RUN apt-get update && apt-get install -y ffmpeg
+FROM node:21.5-slim AS build
 
 FROM build
 
